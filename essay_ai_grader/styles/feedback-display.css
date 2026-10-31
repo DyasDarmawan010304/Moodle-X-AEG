@@ -1,0 +1,61 @@
+.local-essay-ai-feedback-container .score-display {
+    background: #f1f8ff;
+    border: 1px solid #cfe2ff;
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+
+.local-essay-ai-feedback-container .score-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #0d6efd;
+}
+
+.local-essay-ai-feedback-container .score-label {
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.llm-assignment-feedback {
+    font-family: inherit;
+    line-height: 1.6;
+}
+
+.llm-feedback-summary {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #eef7ff;
+    border: 1px solid #cfe2ff;
+    border-radius: 0.5rem;
+}
+
+.llm-feedback-section {
+    margin-bottom: 1rem;
+    padding: 0.95rem 1rem;
+    border: 1px solid #d1e7dd;
+    background: #f8faf7;
+    border-radius: 0.5rem;
+}
+
+.llm-feedback-section h3 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    font-size: 1.05rem;
+    color: #0f5132;
+}
+
+.llm-feedback-section ul,
+.llm-feedback-section ol {
+    margin-bottom: 0;
+    padding-left: 1.35rem;
+}
+
+.llm-feedback-section li {
+    margin-bottom: 0.55rem;
+}
+
+.llm-ai-analysis h2 {
+    font-size: 1.35rem;
+    margin-bottom: 1rem;
+    color: #1d3557;
+}

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/essay_ai_grader/db" VERSION="2026041102" COMMENT="Essay AI Grader plugin database schema">
+    <TABLES>
+        <!-- Configuration table for which assignments have AI grading enabled -->
+        <TABLE NAME="local_essay_ai_config" COMMENT="Configuration settings for AI grading per assignment">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="assignmentid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Assignment activity id"/>
+                <FIELD NAME="enabled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" COMMENT="Enable AI grading for this assignment"/>
+                <FIELD NAME="criteria" TYPE="text" NOTNULL="false" COMMENT="JSON array of evaluation criteria"/>
+                <FIELD NAME="maxscore" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="100" COMMENT="Maximum score"/>
+                <FIELD NAME="prompttemplate" TYPE="text" NOTNULL="false" COMMENT="Custom prompt template for Gemini"/>
+                <FIELD NAME="answerkey" TYPE="text" NOTNULL="false" COMMENT="Teacher answer key / expected answer points"/>
+                <FIELD NAME="rubricguide" TYPE="text" NOTNULL="false" COMMENT="Teacher rubric guidance with scoring aspects and weights"/>
+                <FIELD NAME="question_text" TYPE="text" NOTNULL="false" COMMENT="Question/prompt text for reference in assessment"/>
+                <FIELD NAME="expected_answer" TYPE="text" NOTNULL="false" COMMENT="Expected answer or answer key for reference"/>
+                <FIELD NAME="criteria_config" TYPE="text" NOTNULL="false" COMMENT="JSON object with configured criteria and per-criterion weights"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="assignmentid" TYPE="unique" FIELDS="assignmentid"/>
+            </KEYS>
+        </TABLE>
+
+        <!-- Assessment results table -->
+        <TABLE NAME="local_essay_ai_assess" COMMENT="Assessment results from Gemini AI">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="assignmentid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Assignment id"/>
+                <FIELD NAME="submissionid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Submission id"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="User/Student id"/>
+                <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" COMMENT="pending, processing, completed, error"/>
+                <FIELD NAME="essaytext" TYPE="text" NOTNULL="false" COMMENT="The essay text that was assessed"/>
+                <FIELD NAME="score" TYPE="number" LENGTH="10" DECIMALS="2" NOTNULL="false" COMMENT="Suggested score from AI"/>
+                <FIELD NAME="feedback" TYPE="text" NOTNULL="false" COMMENT="Detailed feedback from AI"/>
+                <FIELD NAME="criteria_scores" TYPE="text" NOTNULL="false" COMMENT="JSON object with scores for each criteria"/>
+                <FIELD NAME="gemini_response" TYPE="text" NOTNULL="false" COMMENT="Extracted assessment JSON from Gemini API"/>
+                <FIELD NAME="gemini_response_raw" TYPE="text" NOTNULL="false" COMMENT="Full raw response from Gemini API"/>
+                <FIELD NAME="teacher_accepted" TYPE="int" LENGTH="1" NOTNULL="false" COMMENT="1 if teacher accepted the score, 0 if rejected, NULL if pending"/>
+                <FIELD NAME="teacher_finalgrade" TYPE="number" LENGTH="10" DECIMALS="2" NOTNULL="false" COMMENT="Final grade after teacher review"/>
+                <FIELD NAME="teacher_feedback" TYPE="text" NOTNULL="false" COMMENT="Teacher's additional feedback"/>
+                <FIELD NAME="error_message" TYPE="text" NOTNULL="false" COMMENT="Error message if assessment failed"/>
+                <FIELD NAME="created" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="modified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="approval_time" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="When teacher approved/rejected the grade"/>
+                <FIELD NAME="approver_id" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Teacher id who approved/rejected"/>
+                <FIELD NAME="override_grade" TYPE="number" LENGTH="10" DECIMALS="2" NOTNULL="false" COMMENT="Teacher override grade"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="assignmentsub" TYPE="unique" FIELDS="assignmentid,submissionid"/>
+                <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+                <INDEX NAME="assignmentid" UNIQUE="false" FIELDS="assignmentid"/>
+                <INDEX NAME="submissionid" UNIQUE="false" FIELDS="submissionid"/>
+            </INDEXES>
+        </TABLE>
+
+        <!-- API Keys and settings -->
+        <TABLE NAME="local_essay_ai_apikeys" COMMENT="Encrypted API keys storage">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="keyname" TYPE="char" LENGTH="100" NOTNULL="true" COMMENT="Name of the API key"/>
+                <FIELD NAME="encryptedkey" TYPE="text" NOTNULL="true" COMMENT="Encrypted API key"/>
+                <FIELD NAME="keytype" TYPE="char" LENGTH="50" NOTNULL="true" COMMENT="Type of API (gemini, etc)"/>
+                <FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" COMMENT="Is this key active"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="keyname" TYPE="unique" FIELDS="keyname"/>
+            </KEYS>
+        </TABLE>
+
+        <!-- Rate limiting and usage tracking -->
+        <TABLE NAME="local_essay_ai_usage" COMMENT="Track API usage for rate limiting and cost tracking">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="User/Teacher id"/>
+                <FIELD NAME="assessmentid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Assessment id"/>
+                <FIELD NAME="apitype" TYPE="char" LENGTH="50" NOTNULL="true" COMMENT="API type used"/>
+                <FIELD NAME="tokensused" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Tokens used in the API call"/>
+                <FIELD NAME="cost" TYPE="number" LENGTH="15" DECIMALS="6" NOTNULL="false" COMMENT="Calculated cost of API call"/>
+                <FIELD NAME="costcurrency" TYPE="char" LENGTH="3" NOTNULL="false" DEFAULT="USD" COMMENT="Currency code (USD, EUR, etc)"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+                <INDEX NAME="assessmentid" UNIQUE="false" FIELDS="assessmentid"/>
+                <INDEX NAME="apitype" UNIQUE="false" FIELDS="apitype"/>
+                <INDEX NAME="timecreated" UNIQUE="false" FIELDS="timecreated"/>
+            </INDEXES>
+        </TABLE>
+    </TABLES>
+</XMLDB>

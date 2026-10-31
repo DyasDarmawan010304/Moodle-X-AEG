@@ -1,0 +1,76 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Plugin lib functions.
+ * DISABLED - all plugin functionality is currently disabled to fix infinite loop issue
+ *
+ * @package   local_essay_ai_grader
+ * @copyright 2026
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+// All functions disabled - just return empty
+function local_essay_ai_grader_log_callback_exception(\Throwable $e, $context) {
+    return;
+}
+
+function local_essay_ai_grader_extend_navigation_module($a, $b, $c) {
+    return;
+}
+
+function local_essay_ai_grader_extend_navigation($navigation) {
+    return;
+}
+
+function local_essay_ai_grader_queue_submission($a, $b, $c) {
+    return;
+}
+
+function local_essay_ai_grader_get_assessment_status($a, $b) {
+    return null;
+}
+
+function local_essay_ai_grader_render_button($a, $b = null, $c = null) {
+    return '';
+}
+
+function local_essay_ai_grader_inject_grading_interface($hook) {
+    return;
+}
+
+function local_essay_ai_grader_coursemodule_standard_elements($a, $b) {
+    return;
+}
+
+function local_essay_ai_grader_coursemodule_definition_after_data($a, $b) {
+    return;
+}
+
+function local_essay_ai_grader_apply_assignment_defaults($a, $b) {
+    return;
+}
+
+function local_essay_ai_grader_coursemodule_edit_post_actions($a, $b) {
+    return;
+}
+
+function local_essay_ai_grader_output_fragment_essay_ai_grader_review_button($args) {
+    return '';
+}
+?>
